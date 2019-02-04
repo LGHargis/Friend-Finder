@@ -9,11 +9,29 @@ module.exports = function (app) {
     });
 
     app.post("/api/friends", function (req, res) {
-        if (friendData.length < 5) {
-            friendData.push(req.body);
-            res.json(true);
-        }
 
+        let currentUser = req.body;
+
+        let bestMatch = null;
+        let currentLowestDifference = null;
+
+        for (j = 0; j < friendData.length; j++) {
+            let sum = 0;
+            for (i = 0; i < friendData[j].scores.length; i++) {
+
+                sum += Math.abs(friendData[j].scores[i] - currentUser[i])
+            }
+
+            if (!currentLowestDifference || currentLowestDifference > sum) {
+                bestMatch = friendData[j];
+                currentLowestDifference = sum;
+            }
+
+        }
+        friendData.push(currentUser)
+
+        res.json(bestMatch);
+        ;
     });
 
 };
